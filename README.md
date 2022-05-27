@@ -134,18 +134,22 @@ http {
         application/atom+xml
         application/javascript
         application/json
+        application/ld+json
+        application/manifest+json
         application/rss+xml
         application/vnd.ms-fontobject
         application/x-javascript
+        application/xhtml+xml
         application/xml
         font/opentype
         font/truetype
-        image/svg+xml;
+        image/svg+xml
+        image/x-icon
         text/css
         text/javascript
         text/plain
         text/x-component
-        text/xml
+        text/xml;
 
     # allow the server to close connection on non responding client, this will free up memory
     reset_timedout_connection on;
