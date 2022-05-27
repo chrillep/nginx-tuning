@@ -105,28 +105,47 @@ http {
     # reduce the data that needs to be sent over network -- for testing environment
     gzip on;
     # gzip_static on;
-    gzip_min_length 10240;
-    gzip_comp_level 1;
+    
+    # Don't compress anything that's already small and unlikely to shrink much
+    # if at all (the default is 20 bytes, which is bad as that usually leads to
+    # larger files after gzipping).
+    gzip_min_length 256;
+    
+    # Compression level (1-9).
+    # 5 is a perfect compromise between size and cpu usage, offering about
+    # 75% reduction for most ascii files (almost identical to level 9).
+    gzip_comp_level 5;
+    
+    # Tell proxies to cache both the gzipped and regular version of a resource
+    # whenever the client's Accept-Encoding capabilities header varies;
+    # Avoids the issue where a non-gzip capable client (which is extremely rare
+    # today) would display gibberish if their proxy gave them the gzipped version.
     gzip_vary on;
+    
     gzip_disable msie6;
-    gzip_proxied expired no-cache no-store private auth;
+    
+    # http://nginx.org/en/docs/http/ngx_http_gzip_module.html#gzip_proxied
+    # Compress data even for clients that are connecting to us via proxies,
+    # identified by the "Via" header (required for CloudFront).
+    gzip_proxied any;
+
     gzip_types
         # text/html is always compressed by HttpGzipModule
+        application/atom+xml
+        application/javascript
+        application/json
+        application/rss+xml
+        application/vnd.ms-fontobject
+        application/x-javascript
+        application/xml
+        font/opentype
+        font/truetype
+        image/svg+xml;
         text/css
         text/javascript
-        text/xml
         text/plain
         text/x-component
-        application/javascript
-        application/x-javascript
-        application/json
-        application/xml
-        application/rss+xml
-        application/atom+xml
-        font/truetype
-        font/opentype
-        application/vnd.ms-fontobject
-        image/svg+xml;
+        text/xml
 
     # allow the server to close connection on non responding client, this will free up memory
     reset_timedout_connection on;
